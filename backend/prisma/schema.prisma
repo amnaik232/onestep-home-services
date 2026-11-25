@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String           @id @default(cuid())
+  name         String
+  email        String           @unique
+  passwordHash String
+  phone        String?
+  role         UserRole         @default(CUSTOMER)
+  requests     ServiceRequest[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model ServiceCategory {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String
+  basePrice   Decimal          @db.Decimal(10, 2)
+  active      Boolean          @default(true)
+  requests    ServiceRequest[]
+  createdAt   DateTime         @default(now())
+}
+
+model ServiceRequest {
+  id             String         @id @default(cuid())
+  customerId     String
+  categoryId     String
+  address        String
+  preferredDate  DateTime
+  notes          String?
+  status         RequestStatus  @default(PENDING)
+  customer       User           @relation(fields: [customerId], references: [id])
+  category       ServiceCategory @relation(fields: [categoryId], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([customerId, createdAt])
+  @@index([status, preferredDate])
+}
