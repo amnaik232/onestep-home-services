@@ -23,7 +23,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: frontend
-          image: IMAGE_PLACEHOLDER_FRONTEND
+          image: mangtha/onestep-frontend:1.0.0-20
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
