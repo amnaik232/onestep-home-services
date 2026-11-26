@@ -10,9 +10,11 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY package*.json ./
 COPY prisma ./prisma
 COPY src ./src
-RUN npx prisma generate && chown -R node:node /app
+RUN ./node_modules/.bin/prisma generate \
+    && chown -R node:node /app \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 USER node
 EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:5000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["sh", "-c", "npx prisma migrate deploy && node src/server.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node src/server.js"]
