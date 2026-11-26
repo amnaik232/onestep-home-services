@@ -24,7 +24,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: backend
-          image: mangtha/onestep-backend:1.0.0-27
+          image: mangtha/onestep-backend:1.0.0-28
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
